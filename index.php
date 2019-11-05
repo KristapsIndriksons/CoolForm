@@ -5,11 +5,7 @@ if(isset($_POST['submit'])){
     echo "Invalid username or password";
   } else {
     $validate = new Validate();
-    $validation = $validate->check_user($_POST, array(
-        'username' => 'users',
-        'password' => 'users' 
-    ));
-    
+    $validation = $validate->check_user();
     if($validation->passed()){
       echo "passed";
     } else {

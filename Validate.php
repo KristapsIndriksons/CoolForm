@@ -10,10 +10,10 @@ class Validate{
     $this->_db = DB::getInstance();
   }
 
-  public function check_user($source, $items = array()){
-      $username = trim($source['username']);
-      $password = trim($source['password']);
-      echo $username.' '.$password;
+  public function check_user(){
+      $username = trim($_POST['username']);
+      $password = trim($_POST['password']);
+      echo $username.' '.$password."  ";
 
   $sql = "SELECT * FROM users WHERE username = ? and password = ?";
   $check = $this->_db->query($sql, array($username,$password));
