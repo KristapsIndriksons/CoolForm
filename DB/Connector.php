@@ -22,7 +22,14 @@ class Connector
     public function getPDO(): PDO
     {
         if (!$this->pdo) {
-            $this->pdo = new PDO($this->buildDSN(),self::USER,self::PASSWORD);
+            $this->pdo = new PDO(
+                $this->buildDSN(),
+                self::USER,
+                self::PASSWORD,
+                [
+                    PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true
+                ]
+            );
         }
 
         return $this->pdo;
