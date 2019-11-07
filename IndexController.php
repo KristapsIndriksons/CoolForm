@@ -46,7 +46,11 @@ class IndexController
         }
 
         if (password_verify($formData['password'], $user->getPasswordHash())) {
-            // TODO Guess some classification can be done here. Redirect based on user type?
+            $_SESSION['username'] = $user->getUsername();
+            $_SESSION['type'] = $user->getType();
+            $_SESSION['email'] = $user->getEmail();
+
+            // TODO Guess some classification can be done here. Redirect based on user type???
             header("Location: success.php");
         } else {
             header("Location: index.html");
