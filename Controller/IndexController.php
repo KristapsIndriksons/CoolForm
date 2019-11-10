@@ -3,6 +3,8 @@
 namespace CoolForm\Controller;
 
 use CoolForm\DB\Repositories\UserRepository;
+use CoolForm\Encoder\Password;
+use CoolForm\Models\User;
 use CoolForm\Validation\Login;
 
 class IndexController
@@ -34,15 +36,17 @@ class IndexController
         }
 
         $formData = $this->getPostData();
+
         if (!$this->validator->validateFormData($formData)) {
-            header("Location: index.html");
-            exit();
+            // Form data was invalid
+            $this->returnToHomepage();
         };
 
-        $user = $this->userRepository->getUser($formData['username']);
+        $user = $this->findUser($formData['username'], $formData['password']);
 
         if (!$user) {
-            $user = $this->userRepository->registerUser($formData['username'], $formData['password']);
+            // Failed to find or register user
+            $this->returnToHomepage();
         }
 
         if (password_verify($formData['password'], $user->getPasswordHash())) {
@@ -71,5 +75,27 @@ class IndexController
             'email' => $_POST['email'] ?? null,
             'password' => $_POST['password'] ?? null
         ];
+    }
+
+    /**
+     * @param string $username
+     * @param string $password
+     * @return User
+     */
+    private function findUser(string $username, string $password): User
+    {
+        $user = $this->userRepository->getUser($username);
+
+        if (!$user) {
+            $user = $this->userRepository->registerUser($username, Password::encode($password));
+        }
+
+        return $user;
+    }
+
+    private function returnToHomepage()
+    {
+        header("Location: index.html");
+        exit();
     }
 }

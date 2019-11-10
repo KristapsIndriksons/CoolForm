@@ -3,7 +3,6 @@
 namespace CoolForm\DB\Repositories;
 
 use CoolForm\DB\Connector;
-use CoolForm\Encoder\Password;
 use CoolForm\Models\User;
 use PDO;
 
@@ -77,7 +76,7 @@ class UserRepository
 
         $pdo->prepare($query)->execute([
             'username' => $username,
-            'password' => Password::encode($passwordHash),
+            'password' => $passwordHash,
             'user_type' => $type,
             'email' => $email
         ]);
