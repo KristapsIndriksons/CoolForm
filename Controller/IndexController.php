@@ -4,6 +4,7 @@ namespace CoolForm\Controller;
 
 use CoolForm\DB\Repositories\UserRepository;
 use CoolForm\Encoder\Password;
+use CoolForm\Logger\Logger;
 use CoolForm\Models\User;
 use CoolForm\Validation\Login;
 
@@ -20,12 +21,18 @@ class IndexController
     protected $validator;
 
     /**
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
      * IndexController constructor.
      */
     public function __construct()
     {
         $this->userRepository = new UserRepository();
         $this->validator = new Login();
+        $this->logger = new Logger();
         $this->execute();
     }
 
@@ -38,14 +45,14 @@ class IndexController
         $formData = $this->getPostData();
 
         if (!$this->validator->validateFormData($formData)) {
-            // Form data was invalid
+            $this->logger->warning('Login attempted with invalid form data', $formData);
             $this->returnToHomepage();
         };
 
         $user = $this->findUser($formData['username'], $formData['password']);
 
         if (!$user) {
-            // Failed to find or register user
+            $this->logger->error('Failed to find or register user', $formData);
             $this->returnToHomepage();
         }
 
@@ -56,11 +63,14 @@ class IndexController
             $_SESSION['email'] = $user->getEmail();
 
             if($user->getType() === 'admin') {
+                $this->logger->info('Successful login of Admin user', (array) $user);
                 header("Location: views/successAdmin.php");
             } else {
+                $this->logger->info('Successful login of Normal user', (array) $user);
                 header("Location: views/successUser.php");
             }
         } else {
+            $this->logger->warning('Login with invalid password attempted', (array) $user);
             header("Location: index.html");
         }
     }

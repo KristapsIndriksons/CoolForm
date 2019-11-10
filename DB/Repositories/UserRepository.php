@@ -3,6 +3,7 @@
 namespace CoolForm\DB\Repositories;
 
 use CoolForm\DB\Connector;
+use CoolForm\Logger\Logger;
 use CoolForm\Models\User;
 use PDO;
 
@@ -20,7 +21,12 @@ class UserRepository
     /**
      * @var Connector
      */
-    private $db;
+    protected $db;
+
+    /**
+     * @var Logger
+     */
+    protected $logger;
 
     /**
      * UserRepository constructor.
@@ -28,6 +34,7 @@ class UserRepository
     public function __construct()
     {
         $this->db = new Connector();
+        $this->logger = new Logger();
     }
 
     /**
@@ -45,6 +52,8 @@ class UserRepository
         $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$userData) {
+            $this->logger->info(sprintf('No user found with username: "%s"', $username));
+
             return null;
         }
 
@@ -80,6 +89,8 @@ class UserRepository
             'user_type' => $type,
             'email' => $email
         ]);
+
+        $this->logger->info(sprintf('Registered user wih username: "%s"', $username));
 
         return $this->getUser($username);
     }
