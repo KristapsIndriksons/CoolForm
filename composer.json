@@ -1,0 +1,9 @@
+{
+  "autoload": {
+    "psr-4": {"CoolForm\\": "./"}
+  },
+  "require": {
+    "ext-http": "*",
+    "ext-pdo": "*"
+  }
+}
