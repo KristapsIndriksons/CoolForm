@@ -2,7 +2,7 @@
 
 require __DIR__ .'/vendor/autoload.php';
 
-use CoolForm\IndexController;
+use CoolForm\Controller\IndexController;
 
 session_start();
 

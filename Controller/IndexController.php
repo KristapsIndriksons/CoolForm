@@ -1,6 +1,6 @@
 <?php
 
-namespace CoolForm;
+namespace CoolForm\Controller;
 
 use CoolForm\DB\Repositories\UserRepository;
 use CoolForm\Validation\Login;
@@ -49,11 +49,13 @@ class IndexController
             $this->userRepository->registerUserLogin($user);
 
             $_SESSION['username'] = $user->getUsername();
-            $_SESSION['type'] = $user->getType();
             $_SESSION['email'] = $user->getEmail();
 
-            // TODO Guess some classification can be done here. Redirect based on user type???
-            header("Location: success.php");
+            if($user->getType() === 'admin') {
+                header("Location: views/successAdmin.php");
+            } else {
+                header("Location: views/successUser.php");
+            }
         } else {
             header("Location: index.html");
         }
