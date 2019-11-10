@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.25)
 # Database: CoolForm
-# Generation Time: 2019-11-10 18:03:58 +0000
+# Generation Time: 2019-11-10 19:19:45 +0000
 # ************************************************************
 
 
@@ -27,12 +27,26 @@ DROP TABLE IF EXISTS `user_login_history`;
 
 CREATE TABLE `user_login_history` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_ID` int(10) unsigned DEFAULT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `IP` varchar(24) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `user_login_history_ibfk_1` FOREIGN KEY (`id`) REFERENCES `users` (`user_ID`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  KEY `user_ID` (`user_ID`),
+  CONSTRAINT `user_login_history_ibfk_1` FOREIGN KEY (`user_ID`) REFERENCES `users` (`user_ID`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
+LOCK TABLES `user_login_history` WRITE;
+/*!40000 ALTER TABLE `user_login_history` DISABLE KEYS */;
+
+INSERT INTO `user_login_history` (`id`, `user_ID`, `date`, `IP`)
+VALUES
+	(15,10,'2019-11-10 21:18:55','127.0.0.1'),
+	(16,10,'2019-11-10 21:19:04','127.0.0.1'),
+	(17,11,'2019-11-10 21:19:13','127.0.0.1'),
+	(18,10,'2019-11-10 21:19:25','127.0.0.1');
+
+/*!40000 ALTER TABLE `user_login_history` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 

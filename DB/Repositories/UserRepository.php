@@ -103,13 +103,13 @@ class UserRepository
     {
         $pdo = $this->db->getPDO();
         $query = sprintf(
-            'INSERT INTO %s (id, date, IP) ' .
-            'VALUES (:id, null, :ip)',
+            'INSERT INTO %s (user_ID, date, IP) ' .
+            'VALUES (:user_ID, null, :ip)',
             self::USER_LOGIN_HISTORY_TABLE
         );
 
         return $pdo->prepare($query)->execute([
-            'id' => $user->getId(),
+            'user_ID' => $user->getId(),
             'ip' => $this->getUsersIP(),
         ]);
     }
