@@ -16,6 +16,7 @@ use PDO;
 class UserRepository
 {
     const USER_TABLE = 'users';
+    const USER_LOGIN_HISTORY_TABLE = 'user_login_history';
 
     /**
      * @var Connector
@@ -82,5 +83,42 @@ class UserRepository
         ]);
 
         return $this->getUser($username);
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function registerUserLogin(User $user): bool
+    {
+        $pdo = $this->db->getPDO();
+        $query = sprintf(
+            'INSERT INTO %s (id, date, IP) ' .
+            'VALUES (:id, null, :ip)',
+            self::USER_LOGIN_HISTORY_TABLE
+        );
+
+        return $pdo->prepare($query)->execute([
+            'id' => $user->getId(),
+            'ip' => $this->getUsersIP(),
+        ]);
+    }
+
+    /**
+     * @return string|null
+     */
+    private function getUsersIP(): ?string
+    {
+        $ip = null;
+
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+
+        return $ip;
     }
 }

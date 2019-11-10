@@ -46,6 +46,8 @@ class IndexController
         }
 
         if (password_verify($formData['password'], $user->getPasswordHash())) {
+            $this->userRepository->registerUserLogin($user);
+
             $_SESSION['username'] = $user->getUsername();
             $_SESSION['type'] = $user->getType();
             $_SESSION['email'] = $user->getEmail();
