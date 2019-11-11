@@ -3,7 +3,7 @@
 namespace CoolForm\DB\Repositories;
 
 use CoolForm\DB\Connector;
-use CoolForm\Encoder\Password;
+use CoolForm\Logger\Logger;
 use CoolForm\Models\User;
 use PDO;
 
@@ -16,11 +16,17 @@ use PDO;
 class UserRepository
 {
     const USER_TABLE = 'users';
+    const USER_LOGIN_HISTORY_TABLE = 'user_login_history';
 
     /**
      * @var Connector
      */
-    private $db;
+    protected $db;
+
+    /**
+     * @var Logger
+     */
+    protected $logger;
 
     /**
      * UserRepository constructor.
@@ -28,6 +34,7 @@ class UserRepository
     public function __construct()
     {
         $this->db = new Connector();
+        $this->logger = new Logger();
     }
 
     /**
@@ -45,6 +52,8 @@ class UserRepository
         $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$userData) {
+            $this->logger->info(sprintf('No user found with username: "%s"', $username));
+
             return null;
         }
 
@@ -76,11 +85,50 @@ class UserRepository
 
         $pdo->prepare($query)->execute([
             'username' => $username,
-            'password' => Password::encode($passwordHash),
+            'password' => $passwordHash,
             'user_type' => $type,
             'email' => $email
         ]);
 
+        $this->logger->info(sprintf('Registered user wih username: "%s"', $username));
+
         return $this->getUser($username);
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function registerUserLogin(User $user): bool
+    {
+        $pdo = $this->db->getPDO();
+        $query = sprintf(
+            'INSERT INTO %s (user_ID, date, IP) ' .
+            'VALUES (:user_ID, null, :ip)',
+            self::USER_LOGIN_HISTORY_TABLE
+        );
+
+        return $pdo->prepare($query)->execute([
+            'user_ID' => $user->getId(),
+            'ip' => $this->getUsersIP(),
+        ]);
+    }
+
+    /**
+     * @return string|null
+     */
+    private function getUsersIP(): ?string
+    {
+        $ip = null;
+
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+
+        return $ip;
     }
 }

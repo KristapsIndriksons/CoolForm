@@ -10,12 +10,9 @@ $email = $_SESSION['email'] ?? null
 <html lang="en" dir="ltr">
 <body>
 <div class="success">
-    <h1>Hello</h1>
+    <h1>Hello User</h1>
     <?php if ($username): ?>
         <h3>User <?= $username ?></h3>
-    <?php endif; ?>
-    <?php if ($type): ?>
-        <h3>Type <?= $type ?></h3>
     <?php endif; ?>
     <?php if ($email): ?>
         <h3>Email <?= $email ?></h3>

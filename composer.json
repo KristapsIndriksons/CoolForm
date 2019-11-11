@@ -3,7 +3,8 @@
     "psr-4": {"CoolForm\\": "./"}
   },
   "require": {
-    "ext-http": "*",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "monolog/monolog": "^2.0",
+    "ext-json": "*"
   }
 }
