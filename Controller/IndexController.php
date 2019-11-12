@@ -43,11 +43,7 @@ class IndexController
         }
 
         $formData = $this->getPostData();
-
-        if (!$this->validator->validateFormData($formData)) {
-            $this->logger->warning('Login attempted with invalid form data', $formData);
-            $this->returnToHomepage();
-        };
+        $this->validation($formData);
 
         $user = $this->findUser($formData['username'], $formData['password']);
 
@@ -62,13 +58,7 @@ class IndexController
             $_SESSION['username'] = $user->getUsername();
             $_SESSION['email'] = $user->getEmail();
 
-            if($user->getType() === 'admin') {
-                $this->logger->info('Successful login of Admin user', (array) $user);
-                header("Location: views/successAdmin.php");
-            } else {
-                $this->logger->info('Successful login of Normal user', (array) $user);
-                header("Location: views/successUser.php");
-            }
+            $this->redirectUser($user);
         } else {
             $this->logger->warning('Login with invalid password attempted', (array) $user);
             header("Location: index.html");
@@ -101,6 +91,30 @@ class IndexController
         }
 
         return $user;
+    }
+
+    /**
+     * @param User $user
+     */
+    private function redirectUser(User $user): void
+    {
+        if($user->getType() === 'admin') {
+            $this->logger->info('Successful login of Admin user', (array) $user);
+            header("Location: views/successAdmin.php");
+        } else {
+            $this->logger->info('Successful login of Normal user', (array) $user);
+            header("Location: views/successUser.php");
+        }
+    }
+
+    /**
+     * @param array $data
+     */
+    private function validation(array $data) {
+        if (!$this->validator->validateFormData($data)) {
+            $this->logger->warning('Login attempted with invalid form data', $data);
+            $this->returnToHomepage();
+        };
     }
 
     private function returnToHomepage()
